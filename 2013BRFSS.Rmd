@@ -1,0 +1,350 @@
+---
+title: "2013 BRFSS Data: Arkansas, income, and health"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+---
+
+## Setup
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+```
+
+### Load data
+```{r load-data}
+load("brfss2013.RData")
+```
+
+
+
+* * *
+
+## Part 1: Data
+
+### Data collection
+
+The data was collected by BRFSS, an ongoing project since 1984 that surveys US citizens about their lifestyle and health conditions, and is managed by the Center for Disease Control (CDC).
+
+Data was sampled from citizens all aged 18 or above, across all 50 states of US, along with the District of Columbia, Puerto Rico, Guam and the District of Federal Columbia participate in the study every year. This is an example of stratified sampling, in which the US population is divided into sub-populations (by states), followed by random sampling within each state. Data was collected by each state individually, but the questionnaires used are the same.
+
+### Data generalizability
+
+While the initial samples will be state-specific, grouping all samples into a large dataset will be generalizable to represent the US population. There are two more reasons to support its generalizability. First, the telephone-based method increases the chance of reaching a representative number of interviewees across US, as the majority of citizens in general use telephone services consistently over the last three decades. In contrast, face-to-face interviews is time-consuming and labor intensive, while online-based surveys may bias the sampling towards younger citizens who tend to use internet more frequently than the elderly. Second, the usage of both landline and cellular telephones prevents systematic exclusion of either households not connected via landline telephones.
+
+Despite that, certain types of data collected should be handled with caution or used with proper assumption, because several issues can arise from telephone-based methods. First, respondents may not be able to provide accurate answers regarding to specific questions. For instance, questions related to periodic physical and psychological conditions (e.g. how many days felt anxious or depressed, or sleep difficulty in the past 30 days) are hard to be recalled accurately. Besides, interviewees may feel embarrassed and refuse to disclose private information such as medical history or personal lifestyle perceived as ‘bad’ by social norms (such as binge drinking).
+
+### Data casualty
+
+This dataset cannot be used to draw any causal relationship among variables. Variables (including raw and computed data) were not collected upon random assignment of individuals to specified conditions or treatments. Instead, the data is observational in nature and originated from the interviewees’ own life experience. Therefore, at best, correlation but not causation can be drawn from variables in this dataset.
+
+* * *
+
+## Part 2: Research questions
+
+I'm interested in the possible connections of the health of the residents of Arkansas in relation to income. According to (Neilson, 2019), throughout the years American health of rich people have stayed consistent whereas the health of those who are poor have declined. 
+
+I wanted to see if there would be a correlation in Arkansas for 2013, and I will analyze future years later. It seems to me that health would also have an effect on possible future income, as someone in good health seems to intuitively be able to apply for jobs, do interviews, and work better. It is also intuitive to me that if reported income and then possibly wealth left over is related to health, people who have to spend money on treatment for health conditions that affect their health would be left in a pit if there is not enough funding in that area.
+
+**Research question 1:**
+
+Is there a relationship between reported income and reported health in Arkansas? 
+
+I will be using self reported general health conclusions. This is not the best metric, as people may be optimistic or pessimistic, subjective in their reports, but I hope in terms of generality it should be alright. 
+
+**Research question 2:**
+
+Is there a correlation between pre-existing health conditions, specifically diabetes, and income in Arkansas?
+
+I see the possibility of lower income folk having less access to healthy food in Arkansas, as usually fresh produce is expensive. I want to see if there is a relationship between lower income and diabetes. 
+
+
+**Research question 3:**
+
+Does amount of children correlate with negative reported health in Arkansas?
+
+It is clear to me that having children cost money, and if there is a relationship between having more children and having less money, there may be a relationship between having more children and health. But, children also may be able to support parents emotionally and long term, but for now  I want to see such a result.
+
+## References:
+
+Neilson, S. (2019, June 28). The Gap Between Rich And Poor Americans' Health Is 
+  Widening. Retrieved July 26, 2020, from           
+  https://www.npr.org/sections/health-shots/2019/06/28/736938334/the-gap-be
+  ween-rich-and-poor-americans-health-is-widening
+
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+### General Data Preparation
+
+Few things we need to get sorted:
+Reports of Income (income2), 
+Reports of Health (genhlth), 
+Diabetes as well (diabete3),
+as the amount of Children (children).
+
+All of these which are from:
+
+(X_state) Arkansas
+
+
+Since reports of income and reports of health appear in two research questions, I'll label possible results here:
+
+There are seven possible results for income2: 
+
+1 = "Less than $10,000"
+
+2 = "Less than $20,000"
+
+3 = "Less than $25,000"
+
+4 = "Less than $35,000"
+
+5 = "Less than $50,000"
+
+6 = "Less than $75,000"
+
+7 = "$75,000 or more"
+
+There are five possible results for genhlth:
+
+1 = "Poor"
+
+2 = "Fair"
+
+3 = "Good"
+
+4 = "Very good"
+
+5 = "Excellent"
+
+Since everything is just for Arkansas, we'll be cleaning the data:
+
+```{r}
+cleandata <- brfss2013 %>%
+  filter(X_state == "Arkansas")
+```
+
+**Research question 1:**
+### Data Preparation/Debrief
+
+income2 and genhtlh in terms of their possible results have already been analyzed above, so all that needs to be done is create bar graphs for each X value, which will be a income2
+
+This will give us 7 graphs, each with income2 on the x-axis, and genhlth on the y-axis, where genhlth will be counted for each income level
+
+### Cleaning up Data
+```{r}
+# Clean up data and columns
+cleandata.new <- cleandata[c(19, 50)]
+cleandata.new <- cleandata.new %>%
+  filter(income2 != 'NA' & genhlth != 'NA')
+
+#less than 10000
+lt10000 <- cleandata.new %>% 
+    filter(income2 == 'Less than $10,000')
+
+#less than 20000
+lt20000 <- cleandata.new %>% 
+    filter(income2 == 'Less than $20,000')
+
+#less than 25000
+lt25000 <- cleandata.new %>% 
+    filter(income2 == 'Less than $25,000')
+
+#less than 35000
+lt35000 <- cleandata.new %>% 
+    filter(income2 == 'Less than $35,000')
+
+#less than 50000
+lt50000 <- cleandata.new %>% 
+    filter(income2 == 'Less than $50,000')
+
+#less than 75000
+lt75000 <- cleandata.new %>% 
+    filter(income2 == 'Less than $75,000')
+
+#75000 or more
+mt75000 <- cleandata.new %>% 
+    filter(income2 == '$75,000 or more')
+
+```
+
+### Build
+
+```{r}
+ggplot(cleandata.new, aes(x = factor(genhlth), fill = income2)) +
+    geom_bar()
+
+ggplot(lt10000, aes(x = factor(genhlth))) +
+    geom_bar()
+
+ggplot(lt20000, aes(x = factor(genhlth))) +
+    geom_bar()
+
+ggplot(lt25000, aes(x = factor(genhlth))) +
+    geom_bar()
+
+ggplot(lt35000, aes(x = factor(genhlth))) +
+    geom_bar()
+
+ggplot(lt50000, aes(x = factor(genhlth))) +
+    geom_bar()
+
+ggplot(lt75000, aes(x = factor(genhlth))) +
+    geom_bar()
+
+ggplot(mt75000, aes(x = factor(genhlth))) +
+    geom_bar()
+
+#Can we make a graph where there are linear graphs of each of the number of 5 factors?
+#Kind of like the factor graph, update on this later, submit first
+```
+### Analysis and Conclusion
+
+
+
+**Research question 2:**
+
+### Data Preparation/Debrief
+
+There are five type of value labels for diabete3:
+
+
+1 = “Yes”
+
+2 = “Yes, but female told only during pregnancy”
+
+3 = “No”
+
+4 = “No, pre-diabetes or borderline diabetes”
+
+NA = “Don’t know/Not Sure” or “Refused” or “[Missing]”
+
+Special diabetic cases (pregnancy-induced diabetes and borderline diabetes) and unknown answers are to be removed, leaving only data with answers of “Yes” or “No” to make things simple.
+
+```{r}
+
+# Clean up Data and Columns
+# 2f - for v.2 'finished' data - can rename to .new.2 later
+
+cleandata2f <- cleandata[c(44,50)] %>%
+  filter((diabete3 == "Yes" | diabete3 == "No") & income2 != 'NA')
+
+lt10000a <- cleandata2f %>%
+  filter(income2 == 'Less than $10,000')
+
+lt20000a <- cleandata2f %>%
+  filter(income2 == 'Less than $20,000')
+
+lt25000a <- cleandata2f %>%
+  filter(income2 == 'Less than $25,000')
+
+lt35000a <- cleandata2f %>%
+  filter(income2 == 'Less than $35,000')
+
+lt50000a <- cleandata2f %>%
+  filter(income2 == 'Less than $50,000')
+
+lt75000a <- cleandata2f %>%
+  filter(income2 == 'Less than $75,000')
+
+mt75000a <- cleandata2f %>%
+  filter(income2 == '$75,000 or more')
+
+```
+
+We will have one bar graph where yes/no is divided in terms of percentage with reported income as the x-axis
+
+### Build
+
+
+```{r}
+#not readable for now, but should be intuitive on how the bars go
+
+ggplot(cleandata2f, aes(x = factor(income2), fill = diabete3)) +
+  geom_bar()
+
+ggplot(lt10000a, aes(x = factor(diabete3))) +
+    geom_bar()
+
+ggplot(lt20000a, aes(x = factor(diabete3))) +
+    geom_bar()
+    
+ggplot(lt25000a, aes(x = factor(diabete3))) +
+    geom_bar()
+    
+ggplot(lt35000a, aes(x = factor(diabete3))) +
+    geom_bar()
+    
+ggplot(lt50000a, aes(x = factor(diabete3))) +
+    geom_bar()
+    
+ggplot(lt75000a, aes(x = factor(diabete3))) +
+    geom_bar()
+    
+ggplot(mt75000a, aes(x = factor(diabete3))) +
+    geom_bar()
+    
+
+```
+### Analysis and Conclusion
+
+
+**Research question 3:**
+
+### Data Preparation/Debrief
+
+The children data is a pretty simple integer value, pretty self-explanatory (0, 1, 2, 3, 4...etc.)
+
+For the x-axis, we will have reported health (genhtlh). For the y-axis, we will have the amount of children
+
+### Cleaning up Data
+```{r}
+#3f for v.3 finished, can rename to cleandata.new.3 later
+cleandata3f <- cleandata[c(19, 47)]
+
+poor <- cleandata3f %>%
+  filter(genhlth == 'Poor')
+
+fair <- cleandata3f %>%
+  filter(genhlth == 'Fair')
+
+good <- cleandata3f %>%
+  filter(genhlth == 'Good')
+
+verygood <- cleandata3f %>%
+  filter(genhlth == 'Very good')
+
+excellent <- cleandata3f %>%
+  filter(genhlth == 'Excellent')
+
+
+```
+
+### Build
+```{r}
+ggplot(poor, aes(x = factor(children))) +
+    geom_bar()
+
+ggplot(fair, aes(x = factor(children))) +
+    geom_bar()
+
+ggplot(good, aes(x = factor(children))) +
+    geom_bar()
+
+ggplot(verygood, aes(x = factor(children))) +
+    geom_bar()
+
+ggplot(excellent, aes(x = factor(children))) +
+    geom_bar()
+
+
+```
+### Analysis and Conclusion
