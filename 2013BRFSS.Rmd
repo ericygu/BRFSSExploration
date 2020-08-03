@@ -208,6 +208,7 @@ ggplot(mt75000, aes(x = factor(genhlth))) +
 ```
 ### Analysis and Conclusion
 
+Overall, by eyeballing the bar graphs, it seems that self-reported health is correlated with income postively, such that the more income you make makes it so that you will tend to correlate with better health. 
 
 
 **Research question 2:**
@@ -296,6 +297,7 @@ ggplot(mt75000a, aes(x = factor(diabete3))) +
 ```
 ### Analysis and Conclusion
 
+These bar graphs, just by eyeballing, there seems to be a direct correlation with the ratio of diabetes to income. As income bracket goes higher, there seems to be less of those who have diabetes.
 
 **Research question 3:**
 
@@ -347,4 +349,9 @@ ggplot(excellent, aes(x = factor(children))) +
 
 
 ```
+
+
+
 ### Analysis and Conclusion
+
+Seems that people with more children, for at least 2 children seem to have better health, which is very interesting. 
